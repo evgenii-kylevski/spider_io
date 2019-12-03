@@ -18,16 +18,16 @@
             <div class="nav justify-content-center">    
                 <ul class="nav justify-content-center">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">HOME</a>
+                        <a class="nav-link active" href="{% url 'home' %}">HOME</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">CRAWLER</a>
+                        <a class="nav-link" href="{% url 'scrapper' %}">CRAWLER</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">SET CRAWLER</a>
+                        <a class="nav-link" href="{% url 'scrap-set' %}">SET CRAWLER</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">REPORTS</a>
+                        <a class="nav-link" href="{% url 'reports' %}">REPORTS</a>
                     </li>
                 </ul>
             </div>
@@ -47,6 +47,6 @@
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="{% static 'css/bootstrap.min.js' %}" crossorigin="anonymous"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}" crossorigin="anonymous"></script>
   </body>
 </html>
