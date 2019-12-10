@@ -1,0 +1,11 @@
+{% extends "scrapper/base.html" %}
+{% block title %}Scrapper{% endblock %}
+{% block body %}
+    <h1>Scrapper home page</h1>
+    <p>Please enter page URL like 'https://catalog.onliner.by/mobile/apple/iphone732'</p>
+    <form action="{% url 'scrap_result' %}" method="post">
+        {% csrf_token %}
+        <input type="text" name="url">
+        <input type="submit" value="Inspect this page">
+    </form>
+{% endblock %}
