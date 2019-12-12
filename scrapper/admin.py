@@ -1,6 +1,10 @@
 from django.contrib import admin
-from scrapper.models import PageSite, Question, Choice
+from scrapper.models import Session
 
-admin.site.register(PageSite)
-admin.site.register(Question)
-admin.site.register(Choice)
+
+@admin.register(Session)
+class SessionAdminPanel(admin.ModelAdmin):
+    list_display = ('url', 'h1', 'scrapping_time')
+    list_filter = ('url',)
+    search_fields = ('h1',)
+    ordering = ('-scrapping_time',)

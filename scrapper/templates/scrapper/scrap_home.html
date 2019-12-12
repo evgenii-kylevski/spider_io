@@ -5,7 +5,9 @@
     <p>Please enter page URL like 'https://catalog.onliner.by/mobile/apple/iphone732'</p>
     <form action="{% url 'scrap_result' %}" method="post">
         {% csrf_token %}
-        <input type="text" name="url">
-        <input type="submit" value="Inspect this page">
+        <textarea rows="5" cols="40" name="url"></textarea>
+        <p><input type="radio" value="save_csv" name="save_csv" checked>Save to CSV</p>
+        <p><input type="radio" value="don't_save_csv" name="save_csv">Don't save to CSV</p>
+        <input type="submit" value="Inspect this page"><br>
     </form>
 {% endblock %}

@@ -1,6 +1,13 @@
 {% extends "scrapper/base.html" %}
 {% block title %}Results{% endblock %}
 {% block body %}
-    <p>This is results page</p>
-    {{ result_data }}
+
+    <p>Result inspect page: {{ url }}:</p>
+    <p>H1: {{ h1 }}</p>
+    <p>Title: {{ title }}</p><br>
+    <form action="{% url 'down_csv' %}" method="post">
+        {% csrf_token %}
+        <input type="submit" value="Download in CSV"><br>
+    </form>
+
 {% endblock %}

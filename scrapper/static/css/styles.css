@@ -53,3 +53,8 @@ time, mark, audio, video {
     vertical-align: middle;
     text-align: center;
 }
+
+.reports {
+    padding: 7px;
+    border: 1px solid;
+}
