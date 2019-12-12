@@ -6,9 +6,6 @@ from bs4 import BeautifulSoup
 from .models import Session
 from django.utils import timezone
 
-# from django.urls import reverse
-# from django.views import generic
-
 
 def get_proxy():
     html = requests.get('https://free-proxy-list.net/').text
@@ -57,6 +54,7 @@ def down_csv(request):
 
     return response
 
+
 def get_main_data(html, url):
     """
     Get main data about page.
@@ -75,6 +73,7 @@ def get_main_data(html, url):
 
     return data_set
 
+
 def record_session(result_data):
     # sessions = Session.object.all()
 
@@ -89,7 +88,6 @@ def record_session(result_data):
 
 # All functions without HTML code output are above this comment.
 
-
 def home_page(request):
     return render(request, 'scrapper/home.html')
 
@@ -101,6 +99,7 @@ def scrap_home(request):
         *   Input URL - get main data in the next page
     """
     return render(request, 'scrapper/scrap_home.html')
+
 
 def scrap_result(request):
     """
@@ -143,4 +142,3 @@ def reports_list(request):
     """
     sessions = Session.pubs.all()
     return render(request, 'scrapper/reports.html', {'sessions': sessions})
-
