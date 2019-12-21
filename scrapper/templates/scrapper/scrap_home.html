@@ -2,12 +2,12 @@
 {% block title %}Scrapper{% endblock %}
 {% block body %}
     <h1>Scrapper home page</h1>
-    <p>Please enter page URL like 'https://catalog.onliner.by/mobile/apple/iphone732'</p>
+    <p>Please enter page URL like 'https://catalog.onliner.by/mobile/apple/iphone732'</p><br>
     <form action="{% url 'scrap_result' %}" method="post">
         {% csrf_token %}
-        <textarea rows="5" cols="40" name="url"></textarea>
-        <p><input type="radio" value="save_csv" name="save_csv" checked>Save to CSV</p>
-        <p><input type="radio" value="don't_save_csv" name="save_csv">Don't save to CSV</p>
-        <input type="submit" value="Inspect this page"><br>
+        <textarea rows="5" cols="40" name="brand_name"></textarea><br>
+        <p><input type="radio" value="save_csv" name="save_csv">Save to CSV</p>
+<!--        <p><input type="radio" value="don't_save_csv" name="save_csv">Don't save to CSV</p>-->
+        <input type="submit" value="Inspect"><br>
     </form>
 {% endblock %}
