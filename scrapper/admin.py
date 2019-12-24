@@ -4,9 +4,9 @@ from scrapper.models import CatalogMobile, MobileProduct
 
 @admin.register(CatalogMobile)
 class CatalogMobileAdminPanel(admin.ModelAdmin):
-    list_display = ('brand_name', 'brand_url')
+    list_display = ('brand_name', 'product_name', 'brand_url')
     list_filter = ('brand_name',)
-    search_fields = ('brand_name',)
+    search_fields = ('product_name',)
     ordering = ('-brand_name',)
 
 @admin.register(MobileProduct)

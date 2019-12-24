@@ -6,6 +6,7 @@ from django.utils import timezone
 from pyvirtualdisplay import Display
 from random import choice
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 from slugify import slugify
 import csv
 import os
@@ -25,33 +26,33 @@ class OnlinerBot:
 
         self.driver = webdriver.Chrome(chromedriver)
         self.total_products = []
-        self.exception_words = ['Смартфон', '(белый)', '(синий)', '(красный)', '(черный)', '(зеленый)', '(розовый)',
-                                '(золотисный)', '(серебристый)', 'Dual', 'SIM', '(оранжевый)', '(фиолетовый)',
-                                '(Мобильный)', '(телефон)', '(голубой)', '(лавандовый)', '(ультрафиолет)',
-                                'Black', 'Gold', 'Blue', 'Pink', 'Apricot', 'Rose', 'Pearl', 'White',
-                                '(2019)', '(2018)', '(2017)', '(2016)', '(2015)', 'китайская', '(золото)',
-                                'Single', 'Gray', 'Silver', 'Sapphire', '(ультрафиолет)',
-                                'международная', 'версия', '(матовый', 'синий)', '(синий', 'изумруд)', 'черный)',
-                                '(золотистый)', '(золотист.)', '(прозрачный', 'титан)', '(сумеречное', 'золото)',
-                                'индийская', 'Fashion', 'Classic', 'Grey', 'Purple', 'золото)', 'Special',
-                                'Edition', 'Fashion', 'Classic', 'Grey', 'Purple', 'золото)', '(PRODUCT)RED™',
-                                '(темно-зеленый)', '(серый', 'космос)', 'Space', 'Grey', 'Purple', 'золото)',
-                                '(коралловый)', '(серый)', '(розовое', '(PRODUCT)RED™', '(перламутр)',
-                                '(оникс)', '(аквамарин)', '(гранат)', '(цитрус)', '(желтый)', '(черный',
-                                'бриллиант)', '(арктический', '(титан)', '(аура)', '(серая', 'орхидея)',
-                                'сапфир)', '(белая', '(медный)', '(королевский', 'рубин)', '(королевский',
-                                'рубин)', '(мистический', 'аметист)', '(коралловый', '(цветущий', 'розовый)',
-                                'Olympic', 'Games', 'Limited', 'Мобильный', 'телефон', 'Cyan',
-                                '(глянцевый', 'индиго)', 'белый)', '(бирюзовый)', '(стальной)', '(индиго)',
-                                '(железо/сталь)', '(индиго/серебристый)', '(железо/сталь)', '(сталь/медь)',
-                                '(темно-серый)', '(индиго)', '(стальной)', '(синий/серебристый)', '(синий/медный)',
-                                '(лимитированная', 'серия)', '(песочный)', '(легендарная', 'модель)']
+        self.exception_words = [
+            'Смартфон', '(белый)', '(синий)', '(красный)', '(черный)', '(зеленый)', '(розовый)',
+            '(золотисный)', '(серебристый)', 'Dual', 'SIM', '(оранжевый)', '(фиолетовый)',
+            '(Мобильный)', '(телефон)', '(голубой)', '(лавандовый)', '(ультрафиолет)',
+            'Black', 'Gold', 'Blue', 'Pink', 'Apricot', 'Rose', 'Pearl', 'White',
+            '(2019)', '(2018)', '(2017)', '(2016)', '(2015)', 'китайская', '(золото)',
+            'Single', 'Gray', 'Silver', 'Sapphire', '(ультрафиолет)', '(грифельно-синий)',
+            'международная', 'версия', '(матовый', 'синий)', '(синий', 'изумруд)', 'черный)',
+            '(золотистый)', '(золотист.)', '(прозрачный', 'титан)', '(сумеречное', 'золото)',
+            'индийская', 'Fashion', 'Classic', 'Grey', 'Purple', 'золото)', 'Special',
+            'Edition', 'Fashion', 'Classic', 'Grey', 'Purple', 'золото)', '(PRODUCT)RED™',
+            '(темно-зеленый)', '(серый', 'космос)', 'Space', 'Grey', 'Purple', 'золото)',
+            '(коралловый)', '(серый)', '(розовое', '(PRODUCT)RED™', '(перламутр)',
+            '(оникс)', '(аквамарин)', '(гранат)', '(цитрус)', '(желтый)', '(черный',
+            'бриллиант)', '(арктический', '(титан)', '(аура)', '(серая', 'орхидея)',
+            'сапфир)', '(белая', '(медный)', '(королевский', 'рубин)', '(королевский',
+            'рубин)', '(мистический', 'аметист)', '(коралловый', '(цветущий', 'розовый)',
+            'Olympic', 'Games', 'Limited', 'Мобильный', 'телефон', 'Cyan', '(бронзовый)',
+            '(глянцевый', 'индиго)', 'белый)', '(бирюзовый)', '(стальной)', '(индиго)',
+            '(железо/сталь)', '(индиго/серебристый)', '(железо/сталь)', '(сталь/медь)',
+            '(темно-серый)', '(индиго)', '(стальной)', '(синий/серебристый)', '(синий/медный)',
+            '(лимитированная', 'серия)', '(песочный)', '(легендарная', 'модель)']
 
     def check_db(self):
         pass
 
     def get_selenium_objects(self, brand_name):
-
         product_names_set = set()
         page = 1
 
@@ -61,7 +62,6 @@ class OnlinerBot:
             self.driver.get(url)
             time.sleep(5)
 
-            # items = self.driver.find_elements_by_class_name("schema-product__title")
             items = self.driver.find_elements_by_class_name("schema-product__part_2")
             time.sleep(2)
 
@@ -70,27 +70,28 @@ class OnlinerBot:
 
             for item in items:
                 try:
-                    div_block = item.find_element_by_class_name("schema-product__title")
-                    name_list = div_block.find_element_by_tag_name('span').text.split()
+                    div_block_title = item.find_element_by_class_name("schema-product__title")
+                    name_list = div_block_title.find_element_by_tag_name('span').text.split()
                     product_name = ' '.join((item for item in name_list if item not in self.exception_words))
-                except:
+                except NameError:
                     product_name = ""
 
                 try:
-                    product_url = item.find_element_by_tag_name('a').get_attribute('href')
-                except:
-                    product_url = ""
+                    div_block_title = item.find_element_by_class_name("schema-product__title")
+                    brand_url = div_block_title.find_element_by_tag_name('a').get_attribute('href')
+                except NameError:
+                    brand_url = ""
 
                 try:
-                    div_block = item.find_element_by_class_name("schema-product__line")
-                    product_price = int(div_block.find_element_by_tag_name('span').text.split()[0].split(',')[0])
-                except:
-                    product_price = ""
+                    div_block_line = item.find_element_by_class_name("schema-product__line")
+                    product_price = int(div_block_line.find_element_by_tag_name('span').text.split()[0].split(',')[0])
+                except NoSuchElementException:
+                    product_price = 0
 
-                if product_name and product_url:
+                if product_name and brand_url:
                     product_slug = slugify(product_name)
-                    new_product = [product_name, product_url, product_price, product_slug]
-
+                    scrapping_time = timezone.now()
+                    new_product = [product_name, brand_url, product_slug, product_price, scrapping_time]
                     if product_name not in product_names_set:
                         product_names_set.add(product_name)
                         self.total_products.append(new_product)
@@ -100,11 +101,33 @@ class OnlinerBot:
         self.driver.close()
         return self.total_products
 
-    def get_BS_objects(self):
-        pass
+    def update_db(self, brand_name):
+        for product in self.total_products:
+            settings = 'need to update'
+            try:
+                product_in_db = CatalogMobile.objects.get(product_slug=product[2])
+                if product_in_db:
+                    product_in_db.brand_name = brand_name
+                    product_in_db.product_name = product[0]
+                    product_in_db.brand_url = product[1]
+                    product_in_db.product_slug = product[2]
+                    product_in_db.product_price = product[3]
+                    product_in_db.scrapping_time = product[4]
+                    product_in_db.save()
+                settings = 'updated'
+            except Exception as DoesNotExist:
+                pass
 
-    def update_DB(self):
-        pass
+            if settings != 'updated':
+                new_record = CatalogMobile.objects.create(
+                    brand_name=brand_name,
+                    product_name=product[0],
+                    brand_url=product[1],
+                    product_slug=product[2],
+                    product_price=product[3],
+                    scrapping_time=product[4]
+                )
+                new_record.save()
 
     def download_csv(self):
         self.response = HttpResponse(content_type='text/csv')
@@ -190,7 +213,13 @@ def record_session(result_data):
     )
     record_session.save()
 
-
+def find_all_brand_names():
+    obj = CatalogMobile.objects.order_by('brand_name').all()
+    brand_names_list = []
+    for elem in obj:
+        if elem.brand_name not in brand_names_list:
+            brand_names_list.append(elem.brand_name)
+    return brand_names_list
 # All functions without HTML code output are above this comment.
 
 
@@ -199,7 +228,8 @@ def home_page(request):
 
 
 def scrap_home(request):
-    return render(request, 'scrapper/scrap_home.html')
+    brand_names_list = find_all_brand_names()
+    return render(request, 'scrapper/scrap_home.html', {'brand_names_list': brand_names_list})
 
 def scrap_result(request):
 
@@ -221,6 +251,7 @@ def scrap_result(request):
         brand_name = request.POST['brand_name']
         new_session = OnlinerBot()
         new_session.get_selenium_objects(request.POST['brand_name'])
+        new_session.update_db(request.POST['brand_name'])
         # if request.POST['save_csv']:
         #     new_session.download_csv()
         return render(request,
@@ -228,6 +259,24 @@ def scrap_result(request):
                       {'brand_name': brand_name, 'total_products': new_session.total_products})
 
 
-def reports_list(request):
-    return render(request, 'scrapper/reports.html')
+def reports_list(request, brand_name='default', order_by='default'):
+    options_to_display = {'brand_name': 'apple', 'order_by': '-product_price'}
+    try:
+        if request.POST['brand_name'] != 'default':
+            options_to_display.update([('brand_name', request.POST['brand_name'])])
+        if request.POST['order_by'] != 'default':
+            options_to_display.update([('order_by', request.POST['order_by'])])
+    except Exception as MultiValueDictKeyError:
+        pass
+
+    statictic_library = []
+    total_products = []
+    brand_names_list = find_all_brand_names()
+    tp_from_bd = CatalogMobile.objects.filter(brand_name=options_to_display['brand_name']).order_by(options_to_display['order_by']).all()
+    for el in tp_from_bd:
+        total_products.append([el.product_name, el.brand_url, el.product_price])
+    return render(request, 'scrapper/reports.html', {'total_products': total_products,
+                                                     'brand_names_list': brand_names_list,
+                                                     'display_brand_name': options_to_display['brand_name'],
+                                                     'display_order_by': options_to_display['order_by']})
 
