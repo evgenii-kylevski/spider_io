@@ -130,14 +130,14 @@ class OnlinerBot:
                 new_record.save()
 
     def download_csv(self):
-        self.response = HttpResponse(content_type='text/csv')
-        self.response['Content-Disposition'] = 'attachment; filename="dataset.csv"'
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="dataset.csv"'
 
         for el in self.total_products:
-            writer = csv.writer(self.response)
+            writer = csv.writer(response)
             writer.writerow(el)
 
-        return self.response
+        return response
 
 
 def get_proxy():
@@ -220,6 +220,8 @@ def find_all_brand_names():
         if elem.brand_name not in brand_names_list:
             brand_names_list.append(elem.brand_name)
     return brand_names_list
+
+
 # All functions without HTML code output are above this comment.
 
 
@@ -230,6 +232,7 @@ def home_page(request):
 def scrap_home(request):
     brand_names_list = find_all_brand_names()
     return render(request, 'scrapper/scrap_home.html', {'brand_names_list': brand_names_list})
+
 
 def scrap_result(request):
 
@@ -259,22 +262,33 @@ def scrap_result(request):
                       {'brand_name': brand_name, 'total_products': new_session.total_products})
 
 
-def reports_list(request, brand_name='default', order_by='default'):
+def reports_list(request, brand_name='default', order_by='default', search_field='default'):
     options_to_display = {'brand_name': 'apple', 'order_by': '-product_price'}
+    brand_names_list = find_all_brand_names()
+    total_products = []
+
+    # Setting for filters
     try:
         if request.POST['brand_name'] != 'default':
             options_to_display.update([('brand_name', request.POST['brand_name'])])
         if request.POST['order_by'] != 'default':
             options_to_display.update([('order_by', request.POST['order_by'])])
+        tp_from_bd = CatalogMobile.objects.filter(brand_name=options_to_display['brand_name']).order_by(options_to_display['order_by']).all()
+        for el in tp_from_bd:
+            total_products.append([el.product_name, el.brand_url, el.product_price])
+    except Exception as MultiValueDictKeyError:
+        pass
+    # Setting for search
+    try:
+        if request.POST['search_field'] != 'default':
+            search_response = CatalogMobile.objects.filter(brand_name__icontains=request.POST['search_field']).order_by(options_to_display['order_by']).all()
+            for el in search_response:
+                total_products.append([el.product_name, el.brand_url, el.product_price])
     except Exception as MultiValueDictKeyError:
         pass
 
     statictic_library = []
-    total_products = []
-    brand_names_list = find_all_brand_names()
-    tp_from_bd = CatalogMobile.objects.filter(brand_name=options_to_display['brand_name']).order_by(options_to_display['order_by']).all()
-    for el in tp_from_bd:
-        total_products.append([el.product_name, el.brand_url, el.product_price])
+
     return render(request, 'scrapper/reports.html', {'total_products': total_products,
                                                      'brand_names_list': brand_names_list,
                                                      'display_brand_name': options_to_display['brand_name'],
