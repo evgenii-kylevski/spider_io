@@ -1,0 +1,4 @@
+/.idea/*
+spider_core/db.sqlite3
+/spider-io-django/*
+
