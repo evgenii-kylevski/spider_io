@@ -9,6 +9,7 @@ class CatalogMobileAdminPanel(admin.ModelAdmin):
     search_fields = ('product_name',)
     ordering = ('-product_price',)
 
+
 @admin.register(MobileProduct)
 class MobileProductAdminPanel(admin.ModelAdmin):
     list_display = ('product_name', 'product_description', 'lowprice', 'highprice')

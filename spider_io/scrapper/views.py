@@ -56,15 +56,14 @@ class OnlinerBot:
             '(пламенный', 'красный)', '(черная', 'керамика)', '(бургунди)', '(пурпурный)',
             '(серебристый', 'хром)', '(бордо)', '(белое', 'серебро)', '(розовый', ]
 
-
     def get_selenium_objects(self, brand_name):
         product_names_set = set()
         page = 1
 
         while True:
-            url = "https://catalog.onliner.by/mobile?mfr%5B0%5D={}&page={}".format(brand_name, str(page))
+            url = "https://catalog.onliner.by/mobile?mfr%5B0%5D={}&page={}"
 
-            self.driver.get(url)
+            self.driver.get(url.format(brand_name, str(page)))
             time.sleep(5)
 
             items = self.driver.find_elements_by_class_name("schema-product__part_2")
@@ -76,8 +75,8 @@ class OnlinerBot:
             for item in items:
                 try:
                     div_block_title = item.find_element_by_class_name("schema-product__title")
-                    name_list = div_block_title.find_element_by_tag_name('span').text.split()
-                    product_name = ' '.join((item for item in name_list if item not in self.exception_words))
+                    name = div_block_title.find_element_by_tag_name('span').text.split()
+                    product_name = ' '.join((i for i in name if i not in self.exception_words))
                 except NameError:
                     product_name = ""
 
@@ -89,14 +88,21 @@ class OnlinerBot:
 
                 try:
                     div_block_line = item.find_element_by_class_name("schema-product__line")
-                    product_price = int(div_block_line.find_element_by_tag_name('span').text.split()[0].split(',')[0])
+                    price = div_block_line.find_element_by_tag_name('span').text
+                    product_price = int(price.split()[0].split(',')[0])
                 except NoSuchElementException:
                     product_price = 0
 
                 if product_name != '' and brand_url != '':
-                    product_slug = slugify(product_name)
+                    product_slug = slugify(brand_url)
                     scrapping_time = timezone.now()
-                    new_product = [product_name, brand_url, product_slug, product_price, scrapping_time]
+                    new_product = [
+                        product_name,
+                        brand_url,
+                        product_slug,
+                        product_price,
+                        scrapping_time
+                    ]
                     if product_name not in product_names_set:
                         product_names_set.add(product_name)
                         self.total_products.append(new_product)
@@ -165,12 +171,14 @@ def get_html(url):
 
 
 def get_product_mobile_data(html, brand_url):
+    time.sleep(3)
     soup = BeautifulSoup(html, 'lxml')
     product_primary = soup.find('div', class_="product-primary-i")
     offer_description = product_primary.find('div', class_="offers-description")
 
     # description
-    product_description = offer_description.find('div', class_="offers-description__specs").find('p').text.strip(' ')
+    product_description = offer_description.find('div', class_="offers-description__specs")
+    product_description = product_description.find('p').text.strip(' ')
 
     # prices
     prices_information = offer_description.find('div', id="product-prices-container")
@@ -196,6 +204,7 @@ def get_product_mobile_data(html, brand_url):
     ]
     return result_data
 
+
 def record_session(result_data):
     settings = 'need to update'
     try:
@@ -212,9 +221,9 @@ def record_session(result_data):
         pass
 
     if settings != 'updated':
-        catalogmobileData = CatalogMobile.objects.get(brand_url=result_data[0])
+        result = CatalogMobile.objects.get(brand_url=result_data[0])
         new_record = MobileProduct.objects.create(
-            product_name=catalogmobileData,
+            product_name=result,
             brand_url=result_data[0],
             product_description=result_data[1],
             lowprice=result_data[2],
@@ -232,6 +241,7 @@ def find_all_brand_names():
             brand_names_list.append(elem.brand_name)
     return brand_names_list
 
+
 def request_handler(data):
     result_data = []
     data_list = data.split()
@@ -240,6 +250,7 @@ def request_handler(data):
 
     return result_data
 
+
 # All views are described below.
 def home_page(request):
     return render(request, 'scrapper/home.html')
@@ -247,7 +258,9 @@ def home_page(request):
 
 def scrap_home(request):
     brand_names_list = find_all_brand_names()
-    return render(request, 'scrapper/scrap_home.html', {'brand_names_list': brand_names_list})
+    return render(request,
+                  'scrapper/scrap_home.html',
+                  {'brand_names_list': brand_names_list})
 
 
 def scrap_result(request):
@@ -270,7 +283,7 @@ def scrap_result(request):
     except Exception as MultiValueDictKeyError:
         pass
 
-    # if you input for example: https://catalog.onliner.by/mobile/apple/iphone4_16gb (in second block)
+    # if you input: https://catalog.onliner.by/mobile/apple/iphone4_16gb (in second block)
     try:
         if request.POST['product_page'] != '' and page_settings['brand_name'] == 'default':
             page_settings['product_page'] = request.POST['product_page']
@@ -280,17 +293,30 @@ def scrap_result(request):
                 result_bs = get_product_mobile_data(get_html(product_page), product_page)
                 record_session(result_bs)
                 result_data.append(result_bs)
-            # result_bs = get_product_mobile_data(get_html(product_page), product_page)
-            # record_session(result_bs)
-            # result_data.append(result_bs)
     except Exception as MultiValueDictKeyError:
         pass
 
-    return render(request, 'scrapper/scrap_result.html', {'total_products': total_products,
-                                                          'product_pages': product_pages,
-                                                          'brand_name': page_settings['brand_name'],
-                                                          'product_page': page_settings['product_page'],
-                                                          'result_data': result_data})
+    # if you check some checkbox in result page
+    try:
+        if page_settings['product_page'] == 'default':
+            for el in request.POST:
+                if 'http' in request.POST[el]:
+                    product_pages.append(request.POST[el])
+
+            for product_page in product_pages:
+                result_bs = get_product_mobile_data(get_html(product_page), product_page)
+                record_session(result_bs)
+                result_data.append(result_bs)
+    except Exception as MultiValueDictKeyError:
+        pass
+
+    return render(request, 'scrapper/scrap_result.html', {
+        'total_products': total_products,
+        'product_pages': product_pages,
+        'brand_name': page_settings['brand_name'],
+        'product_page': page_settings['product_page'],
+        'result_data': result_data
+    })
 
 
 def reports_list(request, brand_name='default', order_by='default', search_field='default'):
@@ -304,7 +330,8 @@ def reports_list(request, brand_name='default', order_by='default', search_field
             options_to_display.update([('brand_name', request.POST['brand_name'])])
         if request.POST['order_by'] != 'default':
             options_to_display.update([('order_by', request.POST['order_by'])])
-        tp_from_bd = CatalogMobile.objects.filter(brand_name=options_to_display['brand_name']).order_by(options_to_display['order_by']).all()
+        tp_from_bd = CatalogMobile.objects.filter(brand_name=options_to_display['brand_name']).all()
+        tp_from_bd = tp_from_bd.order_by(options_to_display['order_by'])
         for el in tp_from_bd:
             total_products.append([el.product_name, el.brand_url, el.product_price])
     except Exception as MultiValueDictKeyError:
@@ -312,16 +339,21 @@ def reports_list(request, brand_name='default', order_by='default', search_field
     # Setting for search
     try:
         if request.POST['search_field'] != 'default':
-            search_response = CatalogMobile.objects.filter(brand_name__icontains=request.POST['search_field']).order_by(options_to_display['order_by']).all()
+            response = CatalogMobile.objects.all()
+            response = response.filter(brand_name__icontains=request.POST['search_field'])
+            search_response = response.order_by(options_to_display['order_by'])
             for el in search_response:
                 total_products.append([el.product_name, el.brand_url, el.product_price])
     except Exception as MultiValueDictKeyError:
         pass
 
-    return render(request, 'scrapper/reports.html', {'total_products': total_products,
-                                                     'brand_names_list': brand_names_list,
-                                                     'display_brand_name': options_to_display['brand_name'],
-                                                     'display_order_by': options_to_display['order_by']})
+    return render(request, 'scrapper/reports.html', {
+        'total_products': total_products,
+        'brand_names_list': brand_names_list,
+        'display_brand_name': options_to_display['brand_name'],
+        'display_order_by': options_to_display['order_by']
+    })
+
 
 def download_csv(request):
     response = HttpResponse(content_type='text/csv')
@@ -333,21 +365,6 @@ def download_csv(request):
         'Brand name', 'Product name', 'URL', 'product_price', 'scrapping_time'
     ))
     for el in q_set:
-        # try:
-        #     obj = CatalogMobile.objects.get(brand_url=el.brand_url)
-        # except RelatedObjectDoesNotExist:
-        #     pass
-        # if obj.mobileproduct.brand_url:
-        #     writer.writerow((
-        #         el.brand_name,
-        #         el.product_name,
-        #         el.brand_url,
-        #         obj.mobileproduct.lowprice,
-        #         obj.mobileproduct.highprice,
-        #         obj.mobileproduct.offercount,
-        #         obj.mobileproduct.product_description,
-        #         obj.mobileproduct.scrapping_time
-        #     ))
         writer.writerow((
             el.brand_name,
             el.product_name,

@@ -7,9 +7,9 @@
         <p class="h1">Your request: {{ brand_name }}</p>
     </div>
     {% endif %}
-    {% if product_page != 'default' %}
+    {% if brand_name == 'default' %}
     <div class="col-lg-12">
-        <p class="h1">Your request: {{ product_page }}</p>
+        <p class="h1">Your request</p>
     </div>
     {% endif %}
 </div>
@@ -31,7 +31,7 @@
                 <tr>
                     <th scope="row">
                         <div class="form-check">
-                            <input class="form-check-input position-static" form="inspect_choosed" type="checkbox" name="product_page" value="{{ element.1 }}" id="{{ element.2 }}" aria-label="...">
+                            <input class="form-check-input position-static" form="inspect_choosed" type="checkbox" name="{{ element.2 }}" value="{{ element.1 }}" aria-label="...">
                         </div>
                     </th>
                     <td>{{ element.0 }}</td>
@@ -44,7 +44,7 @@
         </table>
         {% endif %}
 <!--    If we inspect one product page as http://... we will see this table-->
-        {% if product_page != 'default' %}
+        {% if brand_name == 'default' %}
         <table class="table table-hover table-sm">
             <thead class="thead-light">
                 <tr>
@@ -66,7 +66,7 @@
                 </tr>
                 {% endfor %}
             </tbody>
-            <caption>{{ product_page }} page inspected.</caption>
+            <caption>Your choosed pages inspected.</caption>
         </table>
         {% endif %}
     </div>
