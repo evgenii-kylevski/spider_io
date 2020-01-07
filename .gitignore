@@ -1,4 +1,5 @@
 /.idea/*
 /spider-io-django/*
+/venv/*
 /spider_io/db.sqlite3
 /spider_io/.idea/*
