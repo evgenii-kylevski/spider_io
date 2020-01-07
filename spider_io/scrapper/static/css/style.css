@@ -1,0 +1,77 @@
+/* Specification */
+.h1 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+p {
+    margin-bottom: 0px;
+}
+
+html, body {
+    font-family: 'Dosis', sans-serif;
+    height: 100%;
+}
+
+.page {
+    min-height: 100%;
+    position: relative;
+}
+
+/* First page */
+.header {
+    background: #343A40;
+    color: #010101;
+}
+
+.navbar {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+
+/* Home scrapper page */
+.form-group {
+    border-top-color: rgb(206, 212, 218);
+    border-top-style: solid;
+    border-top-width: 1px;
+    margin-bottom: 0;
+    margin-top: 0;
+    padding-bottom: 1rem;
+    padding-top: 0.5rem;
+}
+
+button[id=inspert_button]{
+    margin-top: 0.3rem;
+}
+
+blockquote {
+    text-align: right;
+}
+
+/* Scrapper body */
+.scrapper {
+    padding-top: 30px;
+    padding-bottom: 50px;
+}
+
+/* Footer */
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: #343A40;
+    color: #C7BCB5;
+}
+
+.footer__text {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+div[id=reports_nav] {
+    margin-bottom: 0.3rem;
+    margin-top: 1rem;
+}
