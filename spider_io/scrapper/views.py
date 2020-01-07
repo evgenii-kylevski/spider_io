@@ -14,7 +14,7 @@ import requests
 import time
 
 
-chromedriver = '../spider-io-django/bin/chromedriver'
+chromedriver = '../venv/bin/chromedriver'
 os.environ["webdriver.chrome.driver"] = chromedriver
 display = Display(visible=0, size=(800, 600))
 display.start()

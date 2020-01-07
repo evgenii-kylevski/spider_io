@@ -27,9 +27,8 @@
                     <p>Description:</p><br>
                 </div>
                 <div class="col-sm-4">
-                    <p>There will be a long text about this module.</p>
-                    <p>There will be a long text about this module.</p>
-                    <p>There will be a long text about this module.</p>
+                    <p>Enter any brand name. The algorithm will collect all the available positions associated with this brand.</p>
+                    <p>YOU CAN SPECIFY ONLY 1 BRAND</p>
                 </div>
             </div>
 
@@ -43,33 +42,29 @@
                     <p>Description:</p><br>
                 </div>
                 <div class="col-sm-4">
-                    <p>There will be a long text about this module.</p>
-                    <p>There will be a long text about this module.</p>
-                    <p>There will be a long text about this module.</p>
+                    <p>You can enter several URL's here, provided that you have previously examined all the phone models of the BRAND that your request belongs to.</p>
                 </div>
             </div>
 
-<!--            <div class="form-group row">-->
-<!--                <div class="col-sm-1">Brands, saved in DB</div>-->
-<!--                <div class="col-sm-6">-->
-<!--                    <div>-->
-<!--                        <select class="custom-select mr-sm-2" id="brands_name_in_db" name="brands_name_in_db">-->
-<!--                            <option value="" selected>Choose...</option>-->
-<!--                            {% for element in brand_names_list %}-->
-<!--                            <option value="{{ element }}">{{ element }}</option>-->
-<!--                            {% endfor %}-->
-<!--                        </select>-->
-<!--                    </div>-->
-<!--                </div>-->
-<!--                <div class="col-sm-1">-->
-<!--                    <p>Description:</p><br>-->
-<!--                </div>-->
-<!--                <div class="col-sm-4">-->
-<!--                    <p>There will be a long text about this module.</p>-->
-<!--                    <p>There will be a long text about this module.</p>-->
-<!--                    <p>There will be a long text about this module.</p>-->
-<!--                </div>-->
-<!--            </div>-->
+            <div class="form-group row">
+                <div class="col-sm-1">Brands, saved in DB</div>
+                <div class="col-sm-6">
+                    <div>
+                        <select class="custom-select mr-sm-2" id="brands_name_in_db" name="brands_name_in_db">
+                            <option value="" selected>Choose...</option>
+                            {% for element in brand_names_list %}
+                            <option>{{ element }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-1">
+                    <p>Description:</p><br>
+                </div>
+                <div class="col-sm-4">
+                    <p>For the previous block, you can check which brand names are already in the database.</p>
+                </div>
+            </div>
 
             <div class="form-group row">
                 <div class="col-sm-1">
@@ -80,11 +75,8 @@
                         the process may take a long time (no more than 3 minutes for brand).</p>
                 </div>
             </div>
-
         </form>
     </div>
 </div>
-
-
 
 {% endblock %}

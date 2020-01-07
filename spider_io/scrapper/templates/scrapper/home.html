@@ -4,36 +4,44 @@
     <div class="row">
         <div class="col-lg-12">
             <p class="h1">Welcome to the best scrapper in the world</p><br>
-            <p></p>
         </div>
     </div>
     <div class="row">
         <div class="col-lg-4">
             <div class="card border-secondary mb-3" style="max-width: 18rem;">
-                <div class="card-header">Collect all urls</div>
+                <div class="card-header">Step 1</div>
                 <div class="card-body text-secondary">
-                    <h5 class="card-title">All phones by "Apple" in one click</h5>
-                    <p class="card-text"></p>
+                    <h5 class="card-title">Collect all urls</h5>
+                    <p class="card-text">- All phones by "Apple" in one click by one brand</p>
+                    <p class="card-text">- Select some models you are interested in and tick them off. Then click "Inspect choosed". This will allow you to get more detailed information about these models.</p>
                 </div>
             </div>
         </div>
         <div class="col-lg-4">
             <div class="card border-secondary mb-3" style="max-width: 18rem;">
-                <div class="card-header">Header</div>
+                <div class="card-header">Step 2</div>
                 <div class="card-body text-secondary">
-                    <h5 class="card-title">Secondary card title</h5>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <h5 class="card-title">Saved Data Reports</h5>
+                    <p class="card-text">The data you have collected is presented in a convenient way.</p>
                 </div>
             </div>
         </div>
         <div class="col-lg-4">
             <div class="card border-secondary mb-3" style="max-width: 18rem;">
-                <div class="card-header">Header</div>
+                <div class="card-header">Step 3</div>
                 <div class="card-body text-secondary">
-                    <h5 class="card-title">Secondary card title</h5>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <h5 class="card-title">Download all data in CSV</h5>
+                    <p class="card-text">All data you have collected is stored in the database automatically. You can download them by clicking "Download CSV"</p>
                 </div>
             </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-12">
+            <form action="{% url 'scrapper' %}" name="start-button"method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-secondary btn-lg btn-block">Start</button>
+            </form>
         </div>
     </div>
 {% endblock %}
