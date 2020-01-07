@@ -3,6 +3,7 @@ beautifulsoup4==4.8.2
 bs4==0.0.1
 certifi==2019.11.28
 chardet==3.0.4
+coverage==5.0.1
 Django==3.0.1
 djangorestframework==3.11.0
 EasyProcess==0.2.8
@@ -13,6 +14,7 @@ lxml==4.4.2
 mccabe==0.6.1
 numpy==1.18.0
 pandas==0.25.3
+pkg-resources==0.0.0
 pycodestyle==2.5.0
 pydocstyle==5.0.1
 pyflakes==2.1.1
