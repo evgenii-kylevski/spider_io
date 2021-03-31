@@ -10,7 +10,7 @@ EasyProcess==0.2.8
 entrypoints==0.3
 flake8==3.7.9
 idna==2.8
-lxml==4.4.2
+lxml==4.6.3
 mccabe==0.6.1
 numpy==1.18.0
 pandas==0.25.3
